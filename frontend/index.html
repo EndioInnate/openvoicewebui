@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenVoice Studio</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 0 auto;
+        padding: 2rem;
+        max-width: 1024px;
+        color: #111;
+        background: #f7f7f8;
+      }
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      h1, h2 {
+        margin: 0;
+      }
+      h1 {
+        font-size: 2.5rem;
+      }
+      h2 {
+        font-size: 1.45rem;
+      }
+      p {
+        margin: 0;
+      }
+      input,
+      select,
+      textarea,
+      button {
+        font: inherit;
+        margin-top: 0.5rem;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        border: 1px solid #d0d7de;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        background: #111827;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+        transition: background 0.2s ease;
+      }
+      button:hover {
+        background: #0f172a;
+      }
+      button.secondary {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+      button.secondary:hover {
+        background: #cbd5f5;
+      }
+      label {
+        font-weight: 600;
+        display: block;
+        margin-top: 1rem;
+      }
+      .nav {
+        margin-top: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .nav-btn {
+        flex: 1;
+        min-width: 160px;
+        background: #e2e8f0;
+        color: #0f172a;
+        border: 1px solid transparent;
+        padding: 0.65rem 1rem;
+      }
+      .nav-btn:hover {
+        background: #cbd5f5;
+      }
+      .nav-btn.active {
+        background: #111827;
+        color: #fff;
+      }
+      main {
+        margin-top: 2rem;
+      }
+      .view {
+        display: none;
+        gap: 2rem;
+        flex-direction: column;
+      }
+      .view.active {
+        display: flex;
+      }
+      .card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .chip {
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        background: #e0f2fe;
+        color: #0c4a6e;
+        font-size: 0.75rem;
+      }
+      .muted {
+        color: #6b7280;
+        font-size: 0.95rem;
+      }
+      .meta {
+        color: #334155;
+        font-size: 0.95rem;
+      }
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .actions button {
+        flex: 1;
+      }
+      .list {
+        display: grid;
+        gap: 0.75rem;
+      }
+      .item {
+        background: #f1f5f9;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .item button {
+        width: auto;
+        padding: 0.45rem 0.8rem;
+        background: #2563eb;
+      }
+      .item button:hover {
+        background: #1d4ed8;
+      }
+      audio {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      .stats {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      .stat {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .record-panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        display: grid;
+        gap: 0.75rem;
+      }
+      .record-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+      .record-buttons {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .record-buttons button {
+        flex: 1;
+      }
+      .inline {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+      }
+      textarea {
+        resize: vertical;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.6rem;
+        background: #e2e8f0;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        color: #334155;
+      }
+      @media (max-width: 640px) {
+        body {
+          padding: 1.5rem;
+        }
+        .nav-btn {
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>OpenVoice Studio</h1>
+      <p class="muted">Offline, privacy-first UI for MyShell OpenVoice. Point the frontend at any compatible gateway and manage your voice library locally.</p>
+    </header>
+
+    <nav class="nav">
+      <button type="button" class="nav-btn active" data-view="overview">Overview</button>
+      <button type="button" class="nav-btn" data-view="voices">Voice Library</button>
+      <button type="button" class="nav-btn" data-view="generate">Generate</button>
+    </nav>
+
+    <main>
+      <section class="view active" data-view="overview">
+        <section class="card">
+          <h2>Gateway</h2>
+          <p class="muted">Set the URL your browser should use for the OpenVoice Studio gateway (or any reverse proxy exposing the same API).</p>
+          <label for="gateway-url">Gateway URL</label>
+          <input id="gateway-url" placeholder="http://127.0.0.1:3001" />
+          <div class="actions">
+            <button id="gateway-save">Use URL</button>
+            <button id="gateway-reset" type="button" class="secondary">Reset default</button>
+          </div>
+          <div id="gateway-message" class="meta"></div>
+          <div id="status" class="meta"></div>
+        </section>
+
+        <section class="card">
+          <h2>Health</h2>
+          <div id="health" class="chips"></div>
+        </section>
+
+        <section class="card">
+          <h2>Library Snapshot</h2>
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-label">Reference clips</span>
+              <span class="stat-value" id="ref-total">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Generated outputs</span>
+              <span class="stat-value" id="outs-total">0</span>
+            </div>
+          </div>
+          <p class="muted">Counts refresh automatically when new files land in the mounted <code>ref</code> and <code>audio_out</code> folders.</p>
+        </section>
+      </section>
+
+      <section class="view" data-view="voices">
+        <section class="card">
+          <h2>Upload Reference</h2>
+          <p class="muted">Upload a labelled sample or capture one with your microphone. Recordings are only stored in your browser until you upload.</p>
+          <label for="ref-label">Reference label</label>
+          <input id="ref-label" placeholder="e.g. endrit_01" />
+          <label for="ref-file">Audio file</label>
+          <input id="ref-file" type="file" accept="audio/*" />
+          <div class="record-panel">
+            <div class="record-header">
+              <strong>Capture a clip</strong>
+              <span class="pill">Beta</span>
+            </div>
+            <p class="muted">Use your microphone to capture a quick sample. If you leave the file picker empty, the recording will be uploaded instead.</p>
+            <div class="record-buttons">
+              <button type="button" id="record-toggle" class="secondary">Start recording</button>
+              <button type="button" id="record-discard" class="secondary" disabled>Discard</button>
+            </div>
+            <div id="record-status" class="meta"></div>
+            <audio id="record-preview" controls hidden></audio>
+          </div>
+          <div class="actions">
+            <button id="ref-upload">Upload</button>
+            <button id="ref-refresh" type="button" class="secondary">Refresh list</button>
+          </div>
+          <div id="ref-message" class="meta"></div>
+        </section>
+
+        <section class="card">
+          <h2>Reference Library</h2>
+          <div id="ref-list" class="list"></div>
+        </section>
+      </section>
+
+      <section class="view" data-view="generate">
+        <section class="card">
+          <h2>Cloned TTS</h2>
+          <div class="inline">
+            <div>
+              <label for="voice">Voice label</label>
+              <input id="voice" placeholder="Match uploaded label" />
+            </div>
+            <div>
+              <label for="accent">Accent</label>
+              <select id="accent">
+                <option value="en-newest">English (Newest)</option>
+                <option value="en-us">English (US)</option>
+                <option value="en-au">English (AU)</option>
+                <option value="en-br">English (BR)</option>
+                <option value="en-india">English (IN)</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="jp">Japanese</option>
+                <option value="kr">Korean</option>
+                <option value="zh">Chinese</option>
+              </select>
+            </div>
+            <div>
+              <label for="speed">Speed</label>
+              <input id="speed" type="number" value="1.0" min="0.6" max="1.4" step="0.05" />
+            </div>
+            <div>
+              <label for="watermark">Watermark</label>
+              <input id="watermark" value="@MyShell" />
+            </div>
+          </div>
+          <label for="tts-text">Text</label>
+          <textarea id="tts-text" rows="4" placeholder="Type text for synthesis..."></textarea>
+          <button id="tts-generate">Generate audio</button>
+          <audio id="tts-output" controls></audio>
+        </section>
+
+        <section class="card">
+          <h2>Base TTS</h2>
+          <div class="inline">
+            <div>
+              <label for="base-accent">Accent</label>
+              <select id="base-accent">
+                <option value="en-newest">English (Newest)</option>
+                <option value="en-us">English (US)</option>
+                <option value="en-au">English (AU)</option>
+                <option value="en-br">English (BR)</option>
+                <option value="en-india">English (IN)</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="jp">Japanese</option>
+                <option value="kr">Korean</option>
+                <option value="zh">Chinese</option>
+              </select>
+            </div>
+            <div>
+              <label for="base-speed">Speed</label>
+              <input id="base-speed" type="number" value="1.0" min="0.6" max="1.4" step="0.05" />
+            </div>
+          </div>
+          <label for="base-text">Text</label>
+          <textarea id="base-text" rows="3" placeholder="Use base model without cloning..."></textarea>
+          <button id="base-generate">Generate base voice</button>
+          <audio id="base-output" controls></audio>
+        </section>
+
+        <section class="card">
+          <h2>Voice Conversion</h2>
+          <label for="conv-target">Target voice label</label>
+          <input id="conv-target" placeholder="e.g. endrit_01" />
+          <label for="conv-accent">Accent</label>
+          <select id="conv-accent">
+            <option value="en-newest">English (Newest)</option>
+            <option value="en-us">English (US)</option>
+            <option value="en-au">English (AU)</option>
+            <option value="en-br">English (BR)</option>
+            <option value="en-india">English (IN)</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="jp">Japanese</option>
+            <option value="kr">Korean</option>
+            <option value="zh">Chinese</option>
+          </select>
+          <label for="conv-file">Source audio</label>
+          <input id="conv-file" type="file" accept="audio/*" />
+          <button id="conv-run">Convert voice</button>
+          <audio id="conv-output" controls></audio>
+        </section>
+
+        <section class="card">
+          <h2>History</h2>
+          <p class="muted">Outputs are read from your <code>audio_out</code> folder.</p>
+          <div id="history-list" class="list"></div>
+        </section>
+      </section>
+    </main>
+
+    <template id="file-item">
+      <div class="item">
+        <div>
+          <strong class="name"></strong>
+          <div class="meta"></div>
+        </div>
+        <div class="actions">
+          <button class="preview">Preview</button>
+          <button class="download">Download</button>
+        </div>
+      </div>
+    </template>
+
+    <script type="module">
+      const env = import.meta.env || {};
+      const STORAGE_KEY = "ovstudio.gatewayBaseURL";
+      const statusEl = document.getElementById("status");
+      const gatewayInput = document.getElementById("gateway-url");
+      const gatewayMessage = document.getElementById("gateway-message");
+      const navButtons = document.querySelectorAll(".nav-btn");
+      const viewSections = document.querySelectorAll(".view");
+      const recordToggleBtn = document.getElementById("record-toggle");
+      const recordDiscardBtn = document.getElementById("record-discard");
+      const recordStatus = document.getElementById("record-status");
+      const recordPreview = document.getElementById("record-preview");
+      const refTotalEl = document.getElementById("ref-total");
+      const outsTotalEl = document.getElementById("outs-total");
+
+      let gatewayBase = "";
+      let mediaRecorder = null;
+      let recordedChunks = [];
+      let recordedBlob = null;
+      let recordStream = null;
+      let recordPreviewUrl = null;
+      let cachedRefs = [];
+      let cachedOuts = [];
+
+      const inferGatewayFromHost = () => {
+        const url = new URL(window.location.href);
+        return `${url.protocol}//${url.hostname}:3001`;
+      };
+
+      const computeDefaultGateway = () => {
+        const candidate =
+          env.VITE_GATEWAY_BASE_URL ||
+          env.GATEWAY_BASE_URL ||
+          inferGatewayFromHost();
+        return candidate.replace(/\/$/, "");
+      };
+
+      const loadStoredGateway = () => {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          return stored ? stored.replace(/\/$/, "") : null;
+        } catch {
+          return null;
+        }
+      };
+
+      const persistGateway = (value) => {
+        try {
+          localStorage.setItem(STORAGE_KEY, value);
+        } catch {
+          // ignore storage failures
+        }
+      };
+
+      const clearStoredGateway = () => {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {
+          // ignore storage failures
+        }
+      };
+
+      const normalizeGateway = (value) => {
+        const trimmed = (value || "").trim();
+        if (!trimmed) throw new Error("Enter a gateway URL.");
+        const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `http://${trimmed}`;
+        let parsed;
+        try {
+          parsed = new URL(candidate);
+        } catch {
+          throw new Error("Invalid gateway URL.");
+        }
+        parsed.hash = "";
+        parsed.search = "";
+        return parsed.toString().replace(/\/$/, "");
+      };
+
+      const setView = (target) => {
+        navButtons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.view === target);
+        });
+        viewSections.forEach((section) => {
+          section.classList.toggle("active", section.dataset.view === target);
+        });
+      };
+
+      navButtons.forEach((btn) => {
+        btn.addEventListener("click", () => setView(btn.dataset.view));
+      });
+
+      const storedGateway = loadStoredGateway() || computeDefaultGateway();
+      gatewayBase = storedGateway;
+      if (gatewayInput) {
+        gatewayInput.value = gatewayBase;
+      }
+      statusEl.textContent = "Connecting…";
+
+      const api = (path) => `${gatewayBase}/api${path}`;
+
+      const updateSnapshot = () => {
+        if (refTotalEl) refTotalEl.textContent = cachedRefs.length;
+        if (outsTotalEl) outsTotalEl.textContent = cachedOuts.length;
+      };
+
+      const releaseRecording = () => {
+        if (recordStream) {
+          recordStream.getTracks().forEach((track) => track.stop());
+        }
+        recordStream = null;
+        mediaRecorder = null;
+      };
+
+      const clearRecording = (message = "Recording cleared.") => {
+        recordedBlob = null;
+        recordedChunks = [];
+        if (recordPreviewUrl) {
+          URL.revokeObjectURL(recordPreviewUrl);
+          recordPreviewUrl = null;
+        }
+        if (recordPreview) {
+          recordPreview.src = "";
+          recordPreview.hidden = true;
+        }
+        if (recordDiscardBtn) recordDiscardBtn.disabled = true;
+        if (recordStatus) recordStatus.textContent = message;
+      };
+
+      const blobToFile = (blob, label) => {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const safeLabel = (label || "recording").replace(/[^a-z0-9_\-]+/gi, "-").slice(0, 40) || "sample";
+        const filename = `${safeLabel}-${timestamp}.webm`;
+        return new File([blob], filename, { type: blob.type || "audio/webm" });
+      };
+
+      const checkHealth = async () => {
+        const chip = (text, ok) => {
+          const span = document.createElement("span");
+          span.className = "chip";
+          span.textContent = text;
+          if (ok) {
+            span.style.background = "#dcfce7";
+            span.style.color = "#166534";
+          } else {
+            span.style.background = "#fee2e2";
+            span.style.color = "#b91c1c";
+          }
+          return span;
+        };
+
+        const container = document.getElementById("health");
+        container.textContent = "";
+
+        try {
+          const res = await fetch(`${gatewayBase}/healthz`);
+          const ok = res.ok;
+          container.appendChild(chip(ok ? "Gateway OK" : "Gateway Down", ok));
+          if (ok) {
+            const data = await res.json().catch(() => null);
+            if (data?.base) {
+              container.appendChild(chip(`Upstream: ${data.base}`, true));
+            }
+          }
+          return ok;
+        } catch (err) {
+          container.appendChild(chip("Gateway unreachable", false));
+          return false;
+        }
+      };
+
+      const blobURL = async (res) => {
+        const blob = await res.blob();
+        return URL.createObjectURL(blob);
+      };
+
+      const synthesize = async ({ endpoint, params }) => {
+        const url = new URL(api(endpoint));
+        Object.entries(params).forEach(([key, value]) => {
+          if (value === undefined || value === "") return;
+          url.searchParams.set(key, value);
+        });
+
+        const res = await fetch(url.toString());
+        if (!res.ok) throw new Error(`Request failed (${res.status})`);
+        return blobURL(res);
+      };
+
+      const renderList = (listId, files, kind) => {
+        const container = document.getElementById(listId);
+        container.textContent = "";
+        if (!files || files.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.textContent = "No files yet.";
+          container.appendChild(empty);
+          return;
+        }
+
+        const template = document.getElementById("file-item");
+        files.forEach((file) => {
+          const node = template.content.firstElementChild.cloneNode(true);
+          node.querySelector(".name").textContent = file.name;
+          node.querySelector(".meta").textContent = `${formatBytes(file.size)} · ${formatDate(file.mtimeMs)}`;
+
+          const previewBtn = node.querySelector(".preview");
+          const downloadBtn = node.querySelector(".download");
+          const fileUrl = `${api(kind === "ref" ? `/refs/${encodeURIComponent(file.name)}` : `/outs/${encodeURIComponent(file.name)}`)}`;
+
+          previewBtn.addEventListener("click", async () => {
+            try {
+              const res = await fetch(fileUrl);
+              if (!res.ok) throw new Error();
+              const audio = new Audio(await blobURL(res));
+              audio.play();
+            } catch {
+              alert("Preview failed");
+            }
+          });
+
+          downloadBtn.addEventListener("click", () => {
+            const link = document.createElement("a");
+            link.href = fileUrl;
+            link.download = file.name;
+            link.click();
+          });
+
+          container.appendChild(node);
+        });
+      };
+
+      const formatBytes = (bytes) => {
+        if (!Number.isFinite(bytes)) return "-";
+        const units = ["B", "KB", "MB", "GB"];
+        let idx = 0;
+        let value = bytes;
+        while (value >= 1024 && idx < units.length - 1) {
+          value /= 1024;
+          idx += 1;
+        }
+        return `${value.toFixed(idx === 0 ? 0 : 1)} ${units[idx]}`;
+      };
+
+      const formatDate = (ms) => {
+        if (!ms) return "";
+        return new Date(ms).toLocaleString();
+      };
+
+      const refreshRefs = async () => {
+        try {
+          const res = await fetch(api("/refs"));
+          if (!res.ok) throw new Error();
+          const files = await res.json();
+          cachedRefs = files;
+          updateSnapshot();
+          renderList("ref-list", files, "ref");
+        } catch {
+          cachedRefs = [];
+          updateSnapshot();
+          renderList("ref-list", [], "ref");
+        }
+      };
+
+      const refreshHistory = async () => {
+        try {
+          const res = await fetch(api("/outs"));
+          if (!res.ok) throw new Error();
+          const files = await res.json();
+          cachedOuts = files;
+          updateSnapshot();
+          renderList("history-list", files, "out");
+        } catch {
+          cachedOuts = [];
+          updateSnapshot();
+          renderList("history-list", [], "out");
+        }
+      };
+
+      const applyGateway = async (newBase, { persist = true } = {}) => {
+        gatewayBase = newBase.replace(/\/$/, "");
+        if (persist) persistGateway(gatewayBase);
+        if (gatewayInput && gatewayInput.value !== gatewayBase) {
+          gatewayInput.value = gatewayBase;
+        }
+        statusEl.textContent = `Gateway: ${gatewayBase}`;
+        const healthy = await checkHealth();
+        await refreshRefs();
+        await refreshHistory();
+        return healthy;
+      };
+
+      const uploadReference = async () => {
+        const label = document.getElementById("ref-label").value.trim();
+        const fileInput = document.getElementById("ref-file");
+        const file = fileInput.files[0];
+        const message = document.getElementById("ref-message");
+
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          message.textContent = "Stop the recording before uploading.";
+          return;
+        }
+
+        if (!label && !(file || recordedBlob)) {
+          message.textContent = "Provide a label and choose a file or capture a recording.";
+          return;
+        }
+
+        const form = new FormData();
+        form.append("audio_file_label", label || "recording");
+
+        let payload = file;
+        if (!payload && recordedBlob) {
+          payload = blobToFile(recordedBlob, label);
+        }
+
+        if (!payload) {
+          message.textContent = "Select a file or use the recorder.";
+          return;
+        }
+
+        form.append("file", payload, payload.name || "recording.webm");
+
+        message.textContent = "Uploading...";
+        try {
+          const res = await fetch(api("/upload_audio"), {
+            method: "POST",
+            body: form,
+          });
+          message.textContent = res.ok ? "Uploaded" : `Failed (${res.status})`;
+          if (res.ok) {
+            document.getElementById("ref-label").value = "";
+            fileInput.value = "";
+            clearRecording("Recording cleared after upload.");
+            await refreshRefs();
+          }
+        } catch (err) {
+          message.textContent = `Upload failed: ${err.message}`;
+        }
+      };
+
+      const runClonedTTS = async () => {
+        const text = document.getElementById("tts-text").value.trim();
+        const voice = document.getElementById("voice").value.trim();
+        const accent = document.getElementById("accent").value;
+        const speed = document.getElementById("speed").value;
+        const watermark = document.getElementById("watermark").value.trim();
+
+        if (!text || !voice) {
+          alert("Provide text and a voice label.");
+          return;
+        }
+
+        try {
+          const src = await synthesize({
+            endpoint: "/synthesize_speech",
+            params: { text, voice, accent, speed, watermark },
+          });
+          document.getElementById("tts-output").src = src;
+          await refreshHistory();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      const runBaseTTS = async () => {
+        const text = document.getElementById("base-text").value.trim();
+        if (!text) {
+          alert("Provide text for base TTS.");
+          return;
+        }
+        const accent = document.getElementById("base-accent").value;
+        const speed = document.getElementById("base-speed").value;
+        try {
+          const src = await synthesize({
+            endpoint: "/base_tts",
+            params: { text, accent, speed },
+          });
+          document.getElementById("base-output").src = src;
+          await refreshHistory();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      const runConversion = async () => {
+        const target = document.getElementById("conv-target").value.trim();
+        const accent = document.getElementById("conv-accent").value;
+        const file = document.getElementById("conv-file").files[0];
+        if (!target || !file) {
+          alert("Provide target voice label and choose a source clip.");
+          return;
+        }
+        const form = new FormData();
+        form.append("target_voice", target);
+        form.append("accent", accent);
+        form.append("file", file);
+        try {
+          const res = await fetch(api("/change_voice"), {
+            method: "POST",
+            body: form,
+          });
+          if (!res.ok) throw new Error(`Request failed (${res.status})`);
+          document.getElementById("conv-output").src = await blobURL(res);
+          await refreshHistory();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      if (recordToggleBtn) {
+        const recordingSecure =
+          window.isSecureContext ||
+          ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+        if (!recordingSecure) {
+          recordToggleBtn.disabled = true;
+          if (recordStatus) {
+            recordStatus.textContent =
+              "Recording requires HTTPS or localhost. Use the file picker instead or terminate through a secure proxy.";
+          }
+        } else if (!navigator.mediaDevices?.getUserMedia) {
+          recordToggleBtn.disabled = true;
+          if (recordStatus) recordStatus.textContent = "Recording is not supported in this browser.";
+        } else {
+          recordToggleBtn.addEventListener("click", async () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+              mediaRecorder.stop();
+              recordToggleBtn.textContent = "Start recording";
+              if (recordStatus) recordStatus.textContent = "Processing recording...";
+              return;
+            }
+
+            try {
+              recordStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+              recordedChunks = [];
+              mediaRecorder = new MediaRecorder(recordStream);
+
+              mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) recordedChunks.push(event.data);
+              };
+
+              mediaRecorder.onstop = () => {
+                const mimeType = mediaRecorder?.mimeType;
+                releaseRecording();
+                recordedBlob = new Blob(recordedChunks, { type: mimeType || "audio/webm" });
+                recordedChunks = [];
+                if (recordPreviewUrl) {
+                  URL.revokeObjectURL(recordPreviewUrl);
+                }
+                recordPreviewUrl = URL.createObjectURL(recordedBlob);
+                if (recordPreview) {
+                  recordPreview.src = recordPreviewUrl;
+                  recordPreview.hidden = false;
+                }
+                if (recordStatus) recordStatus.textContent = "Recording ready. It will upload if no file is selected.";
+                if (recordDiscardBtn) recordDiscardBtn.disabled = false;
+                recordToggleBtn.textContent = "Start recording";
+              };
+
+              mediaRecorder.start();
+              recordToggleBtn.textContent = "Stop recording";
+              if (recordStatus) recordStatus.textContent = "Recording… tap stop when done.";
+              if (recordDiscardBtn) recordDiscardBtn.disabled = true;
+            } catch (err) {
+              releaseRecording();
+              if (recordStatus) recordStatus.textContent = `Microphone unavailable: ${err.message}`;
+              recordToggleBtn.textContent = "Start recording";
+            }
+          });
+        }
+      }
+
+      if (recordDiscardBtn) {
+        recordDiscardBtn.addEventListener("click", () => {
+          clearRecording();
+        });
+      }
+
+      document.getElementById("gateway-save").addEventListener("click", async () => {
+        const inputValue = gatewayInput ? gatewayInput.value : "";
+        try {
+          const normalized = normalizeGateway(inputValue);
+          if (gatewayMessage) gatewayMessage.textContent = "Connecting…";
+          const healthy = await applyGateway(normalized);
+          if (gatewayMessage) {
+            gatewayMessage.textContent = healthy
+              ? "Gateway updated."
+              : "Gateway saved, but health check failed.";
+          }
+        } catch (err) {
+          if (gatewayMessage) gatewayMessage.textContent = err.message;
+        }
+      });
+
+      document.getElementById("gateway-reset").addEventListener("click", async () => {
+        if (gatewayMessage) gatewayMessage.textContent = "Restoring default…";
+        clearStoredGateway();
+        const fallback = computeDefaultGateway();
+        const healthy = await applyGateway(fallback, { persist: false });
+        if (gatewayMessage) {
+          gatewayMessage.textContent = healthy
+            ? "Default gateway restored."
+            : "Default gateway restored, but health check failed.";
+        }
+      });
+
+      document.getElementById("ref-upload").addEventListener("click", uploadReference);
+      document.getElementById("ref-refresh").addEventListener("click", refreshRefs);
+      document.getElementById("tts-generate").addEventListener("click", runClonedTTS);
+      document.getElementById("base-generate").addEventListener("click", runBaseTTS);
+      document.getElementById("conv-run").addEventListener("click", runConversion);
+
+      const init = async () => {
+        setView("overview");
+        const healthy = await applyGateway(gatewayBase, { persist: false });
+        if (gatewayMessage && !healthy) {
+          gatewayMessage.textContent = "Gateway unreachable. Update the URL above.";
+        }
+      };
+
+      init().catch((err) => {
+        console.error("Startup failure", err);
+      });
+    </script>
+  </body>
+</html>
